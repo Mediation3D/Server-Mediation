@@ -1,0 +1,18 @@
+{
+  "name": "jitsi-wish",
+  "version": "1.0.0",
+  "description": "incredible jitsi of wish",
+  "main": "server/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server"
+  },
+  "author": "Moi",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "twilio": "^4.9.0",
+    "twilio-video": "^2.27.0"
+  }
+}
