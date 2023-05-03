@@ -50,6 +50,14 @@ function removeParticipant(username: string, roomId: number): Room {
     return {...room};
 }
 
+function disconnectParticipant(username: string): void {
+    rooms.forEach(room => {
+        const index = room.participants.findIndex(user => user.name === username);
+        if (index === -1) return;
+        room.participants.splice(index, 1);
+    })
+}
+
 function setParticipantAvatar(username: string, roomId: number, avatar: AvatarData): Room {
     const room = rooms.find(_room => _room.id === roomId);
     if (!room) throw new Error('Room not found');
@@ -67,5 +75,6 @@ export default {
     deleteRoom,
     addParticipant,
     removeParticipant,
+    disconnectParticipant,
     setParticipantAvatar,
 }

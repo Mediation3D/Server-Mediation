@@ -16,8 +16,15 @@ function addUser(user: User): void {
     users.push(user);
 }
 
+function deleteUser(username: string): void {
+    const index = users.findIndex(_user => _user.name === username);
+    if (index === -1) throw new Error('User not found');
+    users.splice(index, 1);
+}
+
 export default {
     getUserByName,
     getAllUser,
-    addUser
+    addUser,
+    deleteUser,
 }

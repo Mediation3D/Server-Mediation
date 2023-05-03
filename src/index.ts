@@ -15,6 +15,8 @@ import RoomController from "./controllers/RoomController";
 import UserController from "./controllers/UserController";
 import { Socket } from "./types/business";
 import SocketService from "./services/SocketService";
+import UserService from "./services/UserService";
+import RoomService from "./services/RoomService";
 
 const app = express();
 const {
@@ -34,8 +36,8 @@ app.use(async (req: any, res: any, next: any) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
   res.setHeader(
-	"Access-Control-Allow-Headers",
-	"Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   );
   next();
 });
@@ -44,16 +46,16 @@ app.get("/token", (request, response) => {
   const identity = request.query.identity;
 
   if (!identity) {
-	return response.status(400).send({
-	  body: "An identity is needed",
-	});
+    return response.status(400).send({
+      body: "An identity is needed",
+    });
   }
 
   const token = new AccessToken(
-	process.env.TWILIO_ACCOUNT_SID,
-	process.env.TWILIO_API_KEY,
-	process.env.TWILIO_API_SECRET,
-	{ identity: identity, ttl: MAX_ALLOWED_SESSION_DURATION }
+    process.env.TWILIO_ACCOUNT_SID,
+    process.env.TWILIO_API_KEY,
+    process.env.TWILIO_API_SECRET,
+    { identity: identity, ttl: MAX_ALLOWED_SESSION_DURATION }
   );
 
   token.identity = identity;
@@ -62,8 +64,8 @@ app.get("/token", (request, response) => {
   token.addGrant(grant);
 
   response.send({
-	identity: identity,
-	token: token.toJwt(),
+    identity: identity,
+    token: token.toJwt(),
   });
 });
 
@@ -75,8 +77,8 @@ io.on("connection", (socket: Socket) => {
   console.log("Client socket connected !");
 
   socket.on("@authenticate", ({ username }, callback) => {
-	UserController.login({ username }, callback);
-	SocketService.addSocket(socket, username);
+    UserController.login({ username }, callback);
+    SocketService.addSocket(socket, username);
   });
 
   // Users
@@ -92,11 +94,16 @@ io.on("connection", (socket: Socket) => {
   socket.on("@sendAvatarData", RoomController.sendAvatarData);
 
   socket.on("disconnect", (_reason) => {
-	console.log("DISCONNECT");
-	try {
-		SocketService.deleteSocket(socket.id);
-	} catch (error) {
-		console.warn('Socket not found !')
-	}
+    console.log("DISCONNECT");
+    try {
+      const _socket = SocketService.getSocketById(socket.id);
+      const username = _socket.username;
+      if (!username) return;
+      RoomService.disconnectParticipant(username);
+      UserService.deleteUser(username);
+      SocketService.deleteSocket(_socket.id);
+    } catch (error) {
+      console.warn("Socket not found !");
+    }
   });
 });
