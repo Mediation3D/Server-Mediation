@@ -88,6 +88,9 @@ io.on("connection", (socket: Socket) => {
   socket.on("@joinRoom", RoomController.joinRoom);
   socket.on("@leaveRoom", RoomController.leaveRoom);
 
+  // Avatars
+  socket.on("@sendAvatarData", RoomController.sendAvatarData);
+
   socket.on("disconnect", (_reason) => {
 	console.log("DISCONNECT");
 	try {

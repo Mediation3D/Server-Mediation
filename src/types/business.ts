@@ -36,6 +36,9 @@ export interface User {
 
 export interface Participant extends User {
     role: Role;
+}
+
+export interface ParticipantData extends Participant {
     avatar?: AvatarData;
 }
 
@@ -43,4 +46,8 @@ export interface Room {
     id: number;
 	name: string;
     participants: Participant[];
+}
+
+export interface RoomData extends Omit<Room, 'participants'> {
+    participants: ParticipantData[];
 }

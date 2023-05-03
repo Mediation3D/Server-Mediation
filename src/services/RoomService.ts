@@ -1,6 +1,6 @@
-import { Room } from "../types/business";
+import { AvatarData, Room, RoomData } from "../types/business";
 
-const rooms: Room[] = [];
+const rooms: RoomData[] = [];
 
 function createRoom(name: string): Room {
     const room: Room = {
@@ -14,11 +14,11 @@ function createRoom(name: string): Room {
 
 function getRoomByName(name: string): Room | null {
     const room = rooms.find(_room => _room.name === name);
-    return room ? {...room} : null;
+    return room ? ({...room} as Room) : null;
 }
 
 function getAllRoom(): Room[] {
-    return [...rooms];
+    return [...rooms] as Room[];
 }
 
 function addRoom(room: Room): void {
@@ -50,6 +50,15 @@ function removeParticipant(username: string, roomId: number): Room {
     return {...room};
 }
 
+function setParticipantAvatar(username: string, roomId: number, avatar: AvatarData): Room {
+    const room = rooms.find(_room => _room.id === roomId);
+    if (!room) throw new Error('Room not found');
+    const participant = room.participants.find(_user => _user.name === username);
+    if (!participant) throw new Error('Participants not found');
+    participant.avatar = avatar;
+    return ({...room} as Room);
+}
+
 export default {
     createRoom,
     getRoomByName,
@@ -58,4 +67,5 @@ export default {
     deleteRoom,
     addParticipant,
     removeParticipant,
+    setParticipantAvatar,
 }
