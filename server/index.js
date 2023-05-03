@@ -10,27 +10,22 @@
 require('dotenv').config();
 
 const express = require('express');
+const app = express();
 const http = require('http');
-const path = require('path');
 const { jwt: { AccessToken } } = require('twilio');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
 
-// some hard coded user details
-const users = [
-    {identity: "user1", role: "user"},
-    {identity: "user2", role: "user"},
-    {identity: "user3", role: "user"},
-    {identity: "user4", role: "user"},
-    {identity: "user5", role: "user"},
-    {identity: "admin", role: "host"}
-]
+const roomController = require('../controllers/roomController');
+const userController = require('../controllers/userController');
 
 const VideoGrant = AccessToken.VideoGrant;
-
 // Max. period that a Participant is allowed to be in a Room (currently 14400 seconds or 4 hours)
 const MAX_ALLOWED_SESSION_DURATION = 14400;
+const io = new Server(server, { cors: { origin: "*" } });
+const PORT = process.env.PORT || 3000;
 
-// Create Express webapp.
-const app = express();
+const socketsArray = [];
 
 app.use(async (req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -39,15 +34,7 @@ app.use(async (req, res, next) => {
     next()
 });
 
-app.get('/', function(request, response) {
-    response.status(200).json({ status: "success", body: "App is running"})
-})
-
-/**
- * Generate an Access Token for a chat application user provided via the url
- */
 app.get('/token', function(request, response) {
-    console.log('test', request.query.identity)
     var identity = request.query.identity;
 
     if (!identity) {
@@ -56,8 +43,6 @@ app.get('/token', function(request, response) {
         })
     }
 
-    // Create an access token which we will sign and return to the client,
-    // containing the grant we just created.
     var token = new AccessToken(
         process.env.TWILIO_ACCOUNT_SID,
         process.env.TWILIO_API_KEY,
@@ -65,48 +50,41 @@ app.get('/token', function(request, response) {
         { identity: identity }
     );
 
-    // Assign the generated identity to the token.
     token.identity = identity;
 
-    // Grant the access token Twilio Video capabilities.
     var grant = new VideoGrant();
     token.addGrant(grant);
 
-    // Serialize the token to a JWT string and include it in a JSON response.
     response.send({
         identity: identity,
         token: token.toJwt()
     });
 });
 
-app.get('/getUser', function(request, response) {
-    const identity = request.query.identity
-
-    if (!identity) {
-        return response.status(400).send({
-            status: "error",
-            body: "identity is required..."
-        })
-    }
-
-    const user = users.find(user => user.identity === identity)
-
-    if (!user) {
-        return response.status(400).send({
-            status: "error",
-            body: "identity not found"
-        })
-    }
-
-    return response.status(200).send({
-        status: "success",
-        data: user
-    })
+server.listen(PORT, () => {
+    console.log("Server is listening on port " + PORT);
 });
 
-// Create http server and run it.
-var server = http.createServer(app);
-var port = process.env.PORT || 3000;
-server.listen(port, function() {
-    console.log('Express server running on *:' + port);
-});
+io.on("connection", socket => {
+    console.log("Client socket connected !");
+
+    socket.on("@authenticate", ({ username }, callback) => {
+        userController.login({ username }, callback);
+        socketsArray.push({ socket, username });
+    });
+
+    socket.on('@getRooms', roomController.getRooms);
+    socket.on('@createRoom', roomController.createRoom);
+    socket.on('@joinRoom', roomController.joinRoom);
+    socket.on('@leaveRoom', roomController.leaveRoom);
+    socket.on('@getUsers', userController.getUsers);
+
+    socket.on("disconnect", (reason) => {
+        console.log('DISCONNECT');
+
+        // const index = socketsArray.findIndex(object => object.socket.id === socket.id);
+        // if (index !== -1) {
+        //     socketsArray.splice(index, 1);
+        // }
+    });
+})
