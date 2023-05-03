@@ -13,11 +13,8 @@ async function createRoom(
 ) {
 	const newRoom = RoomService.createRoom(args.roomName);
 	const room = RoomService.addParticipant(args.username, newRoom.id);
-	SocketService.sendToAllUsers({
-		event: '@RoomCreated',
-		data: {
-			room,
-		},
+	SocketService.sendToAllUsers('@RoomCreated', {
+		room,
 	});
 	return callback({ code: 'SUCCESS', data: { room } });
 }
@@ -29,12 +26,11 @@ async function joinRoom(
 	try {
 		const room = RoomService.addParticipant(args.username, args.roomId);
 
-		SocketService.sendToAllUsers({
-			event: '@ParticipantAdded',
-			data: {
+		SocketService.sendToAllUsers('@ParticipantAdded', {
 				roomId: room.id,
-				participant: room.participants.find(_participant => _participant.name === args.username),
-			},
+				participant: room.participants.find(
+					(_participant) => _participant.name === args.username
+				),
 		});
 
 		return callback({ code: 'SUCCESS', data: { room: room } });
@@ -50,21 +46,15 @@ async function leaveRoom(
 	try {
 		const room = RoomService.removeParticipant(args.username, args.roomId);
 		if (room.participants.length === 0) {
-			const roomId = room.id
+			const roomId = room.id;
 			RoomService.deleteRoom(room.id);
-			SocketService.sendToAllUsers({
-				event: '@RoomDeleted',
-				data: {
+			SocketService.sendToAllUsers('@RoomDeleted', {
 					roomId,
-				},
 			});
 		} else {
-			SocketService.sendToAllUsers({
-				event: '@ParticipantRemoved',
-				data: {
+			SocketService.sendToAllUsers('@ParticipantRemoved', {
 					roomId: room.id,
 					username: args.username,
-				},
 			});
 		}
 
@@ -88,8 +78,7 @@ async function sendAvatarData(
 		const usernames = room.participants
 			.map((participant) => participant.name)
 			.filter((_usernames) => _usernames !== args.username);
-		SocketService.sendToUsers(usernames, {
-			event: '@AvatarData',
+		SocketService.sendToUsers(usernames, '@AvatarData', {
 			roomId: room.id,
 			username: args.username,
 			data: args.avatar,

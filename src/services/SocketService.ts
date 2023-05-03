@@ -27,18 +27,21 @@ function deleteSocket(socketId: string): void {
 	sockets.splice(index, 1);
 }
 
-async function sendToUser(username: string, args: object) {
+async function sendToUser(username: string, event: string, args: object) {
 	const socket = sockets.find((_socket) => _socket.username === username);
 	if (!socket) throw new Error('Socket not found');
-	socket.send(args);
+	socket.emit(event, args);
 }
 
-async function sendToUsers(usernames: string[], args: object) {
-	usernames.forEach((username) => sendToUser(username, args));
+async function sendToUsers(usernames: string[], event: string, args: object) {
+	usernames.forEach((username) => sendToUser(username, event, args));
 }
 
-async function sendToAllUsers(args: object) {
-	sockets.forEach((_socket) => _socket.send(args));
+async function sendToAllUsers(event: string, args: object) {
+	sockets.forEach((_socket) => {
+		console.log(`Emit ${event} to ${_socket.username}`);
+		_socket.emit(event, args)
+	});
 }
 
 export default {
