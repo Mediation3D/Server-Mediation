@@ -76,7 +76,7 @@ io.on("connection", (socket: Socket) => {
 
   socket.on("@authenticate", ({ username }, callback) => {
 	UserController.login({ username }, callback);
-	socketsArray.push({ socket, username });
+	SocketService.addSocket(socket, username);
   });
 
   // Users

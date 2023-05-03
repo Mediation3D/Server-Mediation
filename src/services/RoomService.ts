@@ -55,6 +55,7 @@ export default {
     getRoomByName,
     getAllRoom,
     addRoom,
+    deleteRoom,
     addParticipant,
     removeParticipant,
 }
