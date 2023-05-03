@@ -4,8 +4,8 @@
   "description": "incredible jitsi of wish",
   "main": "server/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server"
+    "build": "tsc",
+    "start": "node dist"
   },
   "author": "Moi",
   "license": "ISC",
@@ -14,6 +14,10 @@
     "express": "^4.18.2",
     "socket.io": "^4.6.1",
     "twilio": "^4.9.0",
-    "twilio-video": "^2.27.0"
+    "twilio-video": "^2.27.0",
+    "typescript": "^5.0.4"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17"
   }
 }
