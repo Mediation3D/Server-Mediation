@@ -1,4 +1,9 @@
+import { Socket as SocketIO } from "socket.io"
+import { DefaultEventsMap } from "socket.io/dist/typed-events"
+
 export type Callback = (arg: object) => any
+
+export type Socket = SocketIO<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> & {username?: string}
 
 export interface Coordinate {
 	x: number

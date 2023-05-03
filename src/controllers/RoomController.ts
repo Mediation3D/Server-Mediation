@@ -1,13 +1,14 @@
-import { Callback, Room } from "../types/business";
+import { Callback } from "../types/business";
 import RoomService from "../services/RoomService";
 
 async function getRooms({}, callback: Callback) {
-  const rooms = RoomService.getAll();
+  const rooms = RoomService.getAllRoom();
   return callback({ code: "SUCCESS", data: { rooms } });
 }
 
-async function createRoom(args: { roomName: string }, callback: Callback) {
-  const room = RoomService.create(args.roomName);
+async function createRoom(args: { username: string, roomName: string }, callback: Callback) {
+  const newRoom = RoomService.createRoom(args.roomName);
+  const room = RoomService.addParticipant(args.username, newRoom.id);
   return callback({ code: "SUCCESS", data: { room } });
 }
 

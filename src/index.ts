@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  * Load Twilio configuration from .env config file - the following environment
  * variables should be set:
@@ -15,6 +13,8 @@ import { Server } from "socket.io";
 
 import RoomController from "./controllers/RoomController";
 import UserController from "./controllers/UserController";
+import { Socket } from "./types/business";
+import SocketService from "./services/SocketService";
 
 const app = express();
 const {
@@ -71,7 +71,7 @@ server.listen(PORT, () => {
   console.log("Server is listening on port " + PORT);
 });
 
-io.on("connection", (socket) => {
+io.on("connection", (socket: Socket) => {
   console.log("Client socket connected !");
 
   socket.on("@authenticate", ({ username }, callback) => {
@@ -79,18 +79,17 @@ io.on("connection", (socket) => {
 	socketsArray.push({ socket, username });
   });
 
-  socket.on("@getRooms", RoomController.getRooms);
-  socket.on("@createRoom", RoomController.createRoom);
-  socket.on("@joinRoom", RoomController.joinRoom);
-  socket.on("@leaveRoom", RoomController.leaveRoom);
+  // Users
   socket.on("@getUsers", UserController.getUsers);
 
-  socket.on("disconnect", (reason) => {
-	console.log("DISCONNECT");
+  // Rooms
+  socket.on("@createRoom", RoomController.createRoom);
+  socket.on("@getRooms", RoomController.getRooms);
+  socket.on("@joinRoom", RoomController.joinRoom);
+  socket.on("@leaveRoom", RoomController.leaveRoom);
 
-	// const index = socketsArray.findIndex(object => object.socket.id === socket.id);
-	// if (index !== -1) {
-	//     socketsArray.splice(index, 1);
-	// }
+  socket.on("disconnect", (_reason) => {
+	console.log("DISCONNECT");
+	SocketService.deleteSocket(socket.id);
   });
 });
