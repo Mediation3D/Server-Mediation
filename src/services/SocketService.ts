@@ -16,6 +16,8 @@ function getSocketByUsername(username: string): Socket {
 
 function addSocket(socket: Socket, username?: string): void {
     if (username) socket.username = username;
+    const exists = sockets.find(_socket => _socket.username === username);
+    if (exists) throw new Error('Socket already exist with this username');
     sockets.push(socket);
 }
 

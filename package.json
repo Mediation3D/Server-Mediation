@@ -2,10 +2,11 @@
   "name": "jitsi-wish",
   "version": "1.0.0",
   "description": "incredible jitsi of wish",
-  "main": "server/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist"
+    "start": "node dist",
+    "dev": "tsc & node dist"
   },
   "author": "Moi",
   "license": "ISC",
