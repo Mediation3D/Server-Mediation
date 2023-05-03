@@ -90,6 +90,10 @@ io.on("connection", (socket: Socket) => {
 
   socket.on("disconnect", (_reason) => {
 	console.log("DISCONNECT");
-	SocketService.deleteSocket(socket.id);
+	try {
+		SocketService.deleteSocket(socket.id);
+	} catch (error) {
+		console.warn('Socket not found !')
+	}
   });
 });

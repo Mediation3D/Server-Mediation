@@ -2,9 +2,10 @@ import { User } from "../types/business";
 
 const users: User[] = [];
 
-function getUserByName(name: string): User | null {
+function getUserByName(name: string): User {
     const user = users.find(_user => _user.name === name);
-    return user ? {...user} : null;
+    if (!user) throw new Error("User not found");
+    return user;
 }
 
 function getAllUser(): User[] {
