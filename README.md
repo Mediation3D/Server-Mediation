@@ -3,20 +3,20 @@
 ## Types
 
 * ### User
-```json
+```js
 {
 	name: string
 }
 ```
 * ### Participant
-```json
+```js
 {
     name: string
     role: Role
 }
 ```
 * ### Room
-```json
+```js
 {
     id: number
 	name: string
@@ -24,7 +24,7 @@
 }
 ```
 * ### Coordinate
-```json
+```js
 {
 	x: number
 	y: number
@@ -32,7 +32,7 @@
 }
 ```
 * ### AvatarData
-```json 
+```js 
 {
     head: {
         rotation: Coordinate
@@ -54,28 +54,28 @@
 
 * ### @authenticate
 Event
-```json
+```js
 { 
     username: string
 }
 ```
 Callback
-```json
+```js
 {
     code: "SUCCESS",
-    data: { user },
+    data: { user: User },
 }
 ```
 
 * ### @getUsers
 Event
-```json
+```js
 { 
 
 }
 ```
 Callback
-```json
+```js
 { 
     users: User[]
 }
@@ -83,14 +83,14 @@ Callback
 
 * ### @createRoom
 Event
-```json
+```js
 { 
     username: string
     roomName: string
 }
 ```
 Callback
-```json
+```js
 { 
     code: "SUCCESS"
     data: { room: Room }
@@ -99,13 +99,13 @@ Callback
 
 * ### @getRooms
 Event
-```json
+```js
 { 
 
 }
 ```
 Callback
-```json
+```js
 { 
     code: "SUCCESS"
     data: { rooms: Room[] } 
@@ -114,14 +114,14 @@ Callback
 
 * ### @joinRoom
 Event
-```json
+```js
 { 
     username: string
     roomId: number 
 }
 ```
 Callback
-```json
+```js
 { 
     code: "SUCCESS"
     data: { room: Room } 
@@ -130,14 +130,14 @@ Callback
 
 * ### @leaveRoom
 Event
-```json
+```js
 { 
     username: string
     roomId: number
 }
 ```
 Callback
-```json
+```js
 { 
     code: "SUCCESS"
     data: { }
@@ -146,7 +146,7 @@ Callback
 
 * ### @sendAvatarData
 Event
-```json
+```js
 { 
     roomId: number
     username: string
@@ -154,7 +154,7 @@ Event
 }
 ```
 Callback
-```json
+```js
 { 
     code: "SUCCESS"
     data: { room: Room }
