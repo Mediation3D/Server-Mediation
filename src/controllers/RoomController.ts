@@ -22,6 +22,17 @@ async function joinRoom(
 ) {
   try {
     const room = RoomService.addParticipant(args.username, args.roomId);
+
+    const usernames = room.participants.map((participant) => participant.name)
+        .filter((_usernames) => _usernames !== args.username);
+    SocketService.sendToUsers(usernames, {
+        event: '@emitParticipantAdded',
+        data: {
+          room: room.name,
+          username: args.username,
+        }
+    });
+
     return callback({ code: "SUCCESS", data: { room } });
   } catch (error: any) {
     return callback({ code: "FAILED", message: error.message });
@@ -35,6 +46,17 @@ async function leaveRoom(
   try {
     const room = RoomService.removeParticipant(args.username, args.roomId);
     if (room.participants.length === 0) RoomService.deleteRoom(room.id);
+
+    const usernames = room.participants.map((participant) => participant.name)
+        .filter((_usernames) => _usernames !== args.username);
+    SocketService.sendToUsers(usernames, {
+      event: '@emitParticipantRemoved',
+      data: {
+        room: room.name,
+        username: args.username,
+      }
+    });
+
     return callback({ code: "SUCCESS", data: {} });
   } catch (error: any) {
     return callback({ code: "FAILED", message: error.message });
@@ -51,12 +73,14 @@ async function sendAvatarData(
       args.roomId,
       args.avatar
     );
+
     const usernames = room.participants.map((participant) => participant.name)
         .filter((_usernames) => _usernames !== args.username);
     SocketService.sendToUsers(usernames, {
         event: '@emitAvatar',
         data: args.avatar
     });
+
     return callback({ code: "SUCCESS", data: { room } });
   } catch (error: any) {
     return callback({ code: "FAILED", message: error.message });
