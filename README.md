@@ -23,6 +23,32 @@
     participants: Participant[]
 }
 ```
+* ### Coordinate
+```json
+{
+	x: number
+	y: number
+	z: number
+}
+```
+* ### AvatarData
+```json 
+{
+    head: {
+        rotation: Coordinate
+    }
+	hands: {
+		right: {
+            origin: Coordinate
+            points: Coordinate[]
+        }
+		left: {
+            origin: Coordinate
+            points: Coordinate[]
+        }
+	}
+}
+```
 
 ## Websocket Events
 
