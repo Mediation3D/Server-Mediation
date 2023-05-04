@@ -27,10 +27,10 @@ async function joinRoom(
 		const room = RoomService.addParticipant(args.username, args.roomId);
 
 		SocketService.sendToAllUsers('@ParticipantAdded', {
-				roomId: room.id,
-				participant: room.participants.find(
-					(_participant) => _participant.name === args.username
-				),
+			roomId: room.id,
+			participant: room.participants.find(
+				(_participant) => _participant.name === args.username
+			),
 		});
 
 		return callback({ code: 'SUCCESS', data: { room: room } });
@@ -49,12 +49,12 @@ async function leaveRoom(
 			const roomId = room.id;
 			RoomService.deleteRoom(room.id);
 			SocketService.sendToAllUsers('@RoomDeleted', {
-					roomId,
+				roomId,
 			});
 		} else {
 			SocketService.sendToAllUsers('@ParticipantRemoved', {
-					roomId: room.id,
-					username: args.username,
+				roomId: room.id,
+				username: args.username,
 			});
 		}
 
@@ -90,4 +90,27 @@ async function sendAvatarData(
 	}
 }
 
-export default { getRooms, createRoom, joinRoom, leaveRoom, sendAvatarData };
+async function startMediation(
+	args: { username: string; roomId: number },
+	callback: Callback
+) {
+	try {
+		const room = RoomService.getRoomById(args.roomId);
+
+		room.state = 'mediation';
+
+		const usernames = room.participants
+			.map((participant) => participant.name)
+			.filter((_usernames) => _usernames !== args.username);
+		SocketService.sendToUsers(usernames, '@MediationStarted', {
+			room,
+			mediator: args.username,
+		});
+
+		return callback({ code: 'SUCCESS', data: { room } });
+	} catch (error: any) {
+		return callback({ code: 'FAILED', message: error.message });
+	}
+}
+
+export default { getRooms, createRoom, joinRoom, leaveRoom, sendAvatarData, startMediation };

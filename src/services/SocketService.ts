@@ -34,7 +34,10 @@ async function sendToUser(username: string, event: string, args: object) {
 }
 
 async function sendToUsers(usernames: string[], event: string, args: object) {
-	usernames.forEach((username) => sendToUser(username, event, args));
+	usernames.forEach((username) => {
+		console.log(`Emit ${event} to ${username}`);
+		sendToUser(username, event, args)
+	});
 }
 
 async function sendToAllUsers(event: string, args: object) {

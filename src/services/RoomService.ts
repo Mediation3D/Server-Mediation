@@ -11,6 +11,7 @@ function createRoom(name: string): Room {
 	const room: RoomData = {
 		id: rooms.length + 1,
 		name: name,
+		state: 'waiting',
 		participants: [],
 	};
 	rooms.push(room);
@@ -19,6 +20,12 @@ function createRoom(name: string): Room {
 
 function getRoomByName(name: string): Room {
 	const room = rooms.find((_room) => _room.name === name);
+	if (!room) throw new Error('Room not found');
+	return { ...room } as Room;
+}
+
+function getRoomById(id: number): Room {
+	const room = rooms.find((_room) => _room.id === id);
 	if (!room) throw new Error('Room not found');
 	return { ...room } as Room;
 }
@@ -98,6 +105,7 @@ function setParticipantAvatar(
 export default {
 	createRoom,
 	getRoomByName,
+	getRoomById,
 	getAllRoom,
 	addRoom,
 	deleteRoom,

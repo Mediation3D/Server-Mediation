@@ -89,6 +89,7 @@ io.on('connection', (socket: Socket) => {
 	socket.on('@getRooms', RoomController.getRooms);
 	socket.on('@joinRoom', RoomController.joinRoom);
 	socket.on('@leaveRoom', RoomController.leaveRoom);
+	socket.on('@startMediation', RoomController.startMediation);
 
 	// Avatars
 	socket.on('@sendAvatarData', RoomController.sendAvatarData);
