@@ -56,10 +56,16 @@ export interface ParticipantData extends Participant {
 	avatar?: AvatarData;
 }
 
+export interface RoomConfig {
+	skybox_asset?: string
+	room_asset?: string
+}
+
 export interface Room {
 	id: number;
 	name: string;
 	state: RoomState;
+	config?: RoomConfig
 	participants: Participant[];
 }
 

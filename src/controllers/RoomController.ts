@@ -1,4 +1,4 @@
-import { AvatarEventInput, Callback } from '../types/business';
+import { AvatarEventInput, Callback, RoomConfig, RoomData } from '../types/business';
 import RoomService from '../services/RoomService';
 import SocketService from '../services/SocketService';
 
@@ -91,12 +91,13 @@ async function sendAvatarData(
 }
 
 async function startMediation(
-	args: { username: string; roomId: number },
+	args: { username: string; roomId: number, config: RoomConfig },
 	callback: Callback
 ) {
 	try {
 		const room = RoomService.getRoomById(args.roomId);
 
+		room.config = args.config;
 		room.state = 'mediation';
 
 		const usernames = room.participants
