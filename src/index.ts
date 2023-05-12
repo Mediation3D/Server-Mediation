@@ -77,8 +77,12 @@ io.on("connection", (socket: Socket) => {
   console.log("Client socket connected !");
 
   socket.on("@authenticate", ({ username }, callback) => {
-    UserController.login({ username }, callback);
-    SocketService.addSocket(socket, username);
+    try {
+      UserController.login({ username }, callback);
+      SocketService.addSocket(socket, username);
+    } catch (error) {
+      console.warn("Socket already exists !");
+    }
   });
 
   // Users
@@ -89,6 +93,7 @@ io.on("connection", (socket: Socket) => {
   socket.on("@getRooms", RoomController.getRooms);
   socket.on("@joinRoom", RoomController.joinRoom);
   socket.on("@leaveRoom", RoomController.leaveRoom);
+  socket.on("@startMediation", RoomController.startMediation);
 
   // Avatars
   socket.on("@sendAvatarData", RoomController.sendAvatarData);
