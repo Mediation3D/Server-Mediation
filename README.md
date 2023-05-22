@@ -4,13 +4,15 @@
 
 - [Node.js](https://nodejs.org/)
 - [npm](https://www.npmjs.com/)
+- [twilio account](https://www.twilio.com/)
 
 ## Installation
 
 1. clone Github repository : `git clone https://github.com/Mediation3D/Server-Mediation.git`
 2. install npm dependency : `npm i` (if you use **yarn** : `yarn`)
-3. build project : `npm run build`
-4. start server : `npm run start`
+3. copy & rename **.env.template** into **.env**, then complete with your twilio API data
+4. build project : `npm run build`
+5. start server : `npm run start`
 
 ## Types
 
